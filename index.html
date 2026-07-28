@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>UFO Space</title>
+    <link href="https://fonts.googleapis.com/css2?family=Honk:MORF,SHLN@0..45,0..100&family=Orbitron:wght@400..900&display=swap" rel="stylesheet" />
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Honk:MORF,SHLN@0..45,0..100&family=Orbitron:wght@400..900&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: grid;
+            place-items: center;
+            height: 100vh;
+            background-image:
+                radial-gradient(circle at 0% 100%, #C7158555 5%, rgba(0, 0, 0, 0) 50%),
+                radial-gradient(circle at 0% 0%, #48D1CC55 5%, rgba(0, 0, 0, 0) 50%),
+                radial-gradient(circle at 100% 100%, #FF149333 5%, rgba(0, 0, 0, 0) 50%),
+                linear-gradient(black, indigo);
+            overflow: hidden;
+            font-family: 'Honk', cursive;
+            touch-action: none;
+        }
+
+        .space,
+        .planets,
+        .shootingstar {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .space {
+            z-index: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+        }
+
+        .planets {
+            z-index: 22;
+            width: 100vw;
+            height: 100vh;
+            filter: brightness(0.27);
+            pointer-events: none;
+        }
+
+        .shootingstar {
+            z-index: 21;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .ufo {
+            position: absolute;
+            left: -200px;
+            top: 0;
+            width: clamp(45px, 8vw, 109px);
+            height: clamp(20px, 3.8vw, 50px);
+            background-repeat: no-repeat;
+            background-size: contain;
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbDpzcGFjZT0icHJlc2VydmUiIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBpbWFnZS1yZW5kZXJpbmc9Im9wdGltaXplUXVhbGl0eSIgc2hhcGUtcmVuZGVyaW5nPSJnZW9tZXRyaWNQcmVjaXNpb24iIHRleHQtcmVuZGVyaW5nPSJnZW9tZXRyaWNQcmVjaXNpb24iIHZpZXdCb3g9IjAgMCAxMzg0IDg2OS42MyI+DQogIDxwYXRoIGQ9Ik0xMDQwLjQxIDc1MS4wOWMyLjc2LTQuMiA0LjE5LTguNTkgNy45OC0xMC4wOCAzLjEtMS4yMSAxMS4wMS0yLjc4IDE0LjYxLTMuNjkgODQuMzEtMjEuMzMgMjIxLjY1LTYyLjg5IDI4MC43LTEyNS43IDIxLjE0LTIyLjQ4IDQ4LjQ4LTU2LjkzIDM3Ljk4LTEwNi4wNi0xNC45MS02OS43OC0xMDYuNjItMTA3LjI3LTE2Ny4wNi0xMjguMDQtMzguMzUtMTMuMTgtNzcuODYtMjAuNjUtMTE2LjktMzAuOTUtMy4wMi03LjAzLTYuNTEtMjguMTEtOS4xOS0zNy42NS0xOS44Ni03MC42NC01NC44NS0xMzEuNzctMTA1LjUxLTE4My4yMS00MS4yOS00MS45My04OC4zMy03My4yMi0xNDQuMzUtOTUuMTgtMTAzLjg5LTQwLjcxLTE4OS40NS00MC43MS0yOTMuMzQgMC01Ni4wMiAyMS45Ni0xMDMuMDYgNTMuMjUtMTQ0LjM1IDk1LjE4LTUwLjY2IDUxLjQ0LTg1LjY1IDExMi41Ny0xMDUuNTEgMTgzLjIxLTIuNjggOS41NC02LjE3IDMwLjYyLTkuMTkgMzcuNjUtMzkuMDQgMTAuMy03OC41NSAxNy43Ny0xMTYuOSAzMC45NS02MC40NCAyMC43Ny0xNTIuMTUgNTguMjYtMTY3LjA2IDEyOC4wNC0xMC41IDQ5LjEzIDE2Ljg0IDgzLjU4IDM3Ljk4IDEwNi4wNiA1OS4wNSA2Mi44MSAxOTYuMzkgMTA0LjM3IDI4MC43IDEyNS43IDMuNi45MSAxMS41MSAyLjQ4IDE0LjYxIDMuNjkgMy43OSAxLjQ5IDUuMjIgNS44OCA3Ljk4IDEwLjA4IDEwMy45NiAxNTguMDYgNTkyLjg2IDE1OC4wNiA2OTYuODIgMHoiLz4NCiAgPHBhdGggZmlsbD0iI2E5YWJhZSIgZD0iTTI4My41MyAzODUuOTdjLTEwLjMyLjQyLTIyNi40OSA0NC4wNi0yMzYuOTYgMTIyLjM1LTEzLjUgMTA5LjE5IDE5My4xNSAxNzIuOTkgMzgxIDIwNS43Ny0uMTItNS4zOC0uMjMtMTAuNzctLjIzLTE2LjE4IDAtMTkuNTMuODEtMzguODkgMi40LTU4LjA2di0uMDFjLTIuNC4zNS00Ljg1LjUzLTcuMzQuNTMtMjguMDUgMC01MC43OS0yMi43My01MC43OS01MC43OHMyMi43NC01MC43OCA1MC43OS01MC43OGM3Ljg5IDAgMTUuMzcgMS44IDIyLjAzIDUuMDEgNC4yOS0xOS4wOSA5LjM2LTM3Ljk0IDE1LjE3LTU2LjUxIDkuMjQgMS40NC0xODEuNzMtMTkuMjItMTc2LjA3LTEwMS4zNHptLTczLjMxIDgzLjYxYzI4LjA0IDAgNTAuNzggMjIuNzQgNTAuNzggNTAuNzggMCAyOC4wNS0yMi43NCA1MC43OS01MC43OCA1MC43OS0yOC4wNSAwLTUwLjc5LTIyLjc0LTUwLjc5LTUwLjc5IDAtMjguMDQgMjIuNzQtNTAuNzggNTAuNzktNTAuNzh6Ii8+DQogIDxwYXRoIGZpbGw9IiM4NDg2ODgiIGQ9Ik02OTUuMDEgNTAzLjExaC0uMDRjLS42MyAwLTEuMjYgMC0xLjg4LjAxLTM1LjgyLS4zOS0xMzkuNDMtMS4xLTIzMy40OS0xNS44MS01LjgxIDE4LjU3LTEwLjg4IDM3LjQyLTE1LjE3IDU2LjUxIDE3LjAxIDguMjEgMjguNzUgMjUuNjIgMjguNzUgNDUuNzcgMCAyNS41Ni0xOC44NyA0Ni43LTQzLjQ0IDUwLjI2LTEuNTkgMTkuMTctMi40IDM4LjUzLTIuNCA1OC4wNiAwIDUuNDEuMTEgMTAuOC4yMyAxNi4xOCAxMTUuODkgMjAuNTEgMjIzLjcgMjguOTMgMjY1LjUyIDI4LjIuNDMuMDEuODguMDEgMS4zNC4wMmgxLjExYy40Ni0uMDEuOTItLjAxIDEuMzUtLjAyIDEwOS4yIDEuODkgNjY4LjIyLTU4LjQzIDY0Ni41Mi0yMzMuOTctMTAuNDctNzguMjktMjI2LjY0LTEyMS45My0yMzYuOTYtMTIyLjM1IDcuODkgMTE0LjMxLTMzNy42IDExNi4zNy00MDkuNTYgMTE3LjE1LS42My0uMDEtMS4yNS0uMDEtMS44OC0uMDF6bS0uMDIgNjIuMTZjMjguMDUgMCA1MC43OCAyMi43NCA1MC43OCA1MC43OSAwIDI4LjA0LTIyLjczIDUwLjc4LTUwLjc4IDUwLjc4cy01MC43OC0yMi43NC01MC43OC01MC43OGMwLTI4LjA1IDIyLjczLTUwLjc5IDUwLjc4LTUwLjc5em0yNzIuNTktMjYuNDZjMjguMDUgMCA1MC43OSAyMi43MyA1MC43OSA1MC43OHMtMjIuNzQgNTAuNzgtNTAuNzkgNTAuNzgtNTAuNzgtMjIuNzMtNTAuNzgtNTAuNzggMjIuNzMtNTAuNzggNTAuNzgtNTAuNzh6bTIxMi4xOC02OS4yM2MyOC4wNSAwIDUwLjc5IDIyLjc0IDUwLjc5IDUwLjc4IDAgMjguMDUtMjIuNzQgNTAuNzktNTAuNzkgNTAuNzlzLTUwLjc4LTIyLjc0LTUwLjc4LTUwLjc5YzAtMjguMDQgMjIuNzMtNTAuNzggNTAuNzgtNTAuNzh6Ii8+DQogIDxwYXRoIGZpbGw9IiM5OWNjYmQiIGQ9Ik0zMjQuNDYgMzk2LjAyYzE4Ljg0IDE5LjEzIDgxLjM1IDM0LjQ0IDE1MS4yOCA0NS4yOSAxNS41Ni0xNjEuNjQgODEuMjUtMzA0LjU2IDE3Ny41OC00MDUuMDMuMzgtLjAzLTg4LjM2IDE1LjkxLTEyOC4wMSAzNS4xMy03OS42NCAzOC42Mi0xNTAuMTcgMTE4LjA2LTE3OC4xOCAyMDQuNjItNi42MSAyMC40Mi0yNy4wOCAxMDAuMTgtMjIuNjcgMTE5Ljk5em0xNTEuMzEgNDUuM3oiLz4NCiAgPHBhdGggZmlsbD0iIzNmYTM4NyIgZD0iTTQ3NS43NCA0NDEuMzFjODAuNzggMTIuNTQgMTcxLjQ4IDE5LjEzIDIxNi4yNiAxOC43NyA4My41NC42NiAzMjYuOTMtMjIuODMgMzY3LjU0LTY0LjA2IDQuNDEtMTkuODEtMTYuMDYtOTkuNTctMjIuNjctMTE5Ljk5LTI4LjAyLTg2LjU2LTk4LjU0LTE2Ni0xNzguMTgtMjA0LjYyLTQ4LjI3LTIzLjQtMTA0LjQtMzYuNDQtMTY1LjE1LTM3LjEzdi0uMDNsLTEuNTQuMDItMS41NC0uMDJ2LjAzYy0xMi41OS4xNC0yNC45OC44Mi0zNy4xNCAyLTk2LjMzIDEwMC40Ny0xNjIuMDIgMjQzLjM5LTE3Ny41OCA0MDUuMDN6Ii8+DQogIDxwYXRoIGZpbGw9IiNmNDlhMzEiIHN0cm9rZT0iIzM3MzQzNSIgc3Ryb2tlLW1pdGVybGltaXQ9IjIuNjEzMSIgc3Ryb2tlLXdpZHRoPSIyLjA4IiBkPSJNMTE3OS43NiA0ODQuOTRjMTkuNTcgMCAzNS40MyAxNS44NiAzNS40MyAzNS40MiAwIDE5LjU3LTE1Ljg2IDM1LjQzLTM1LjQzIDM1LjQzLTE5LjU2IDAtMzUuNDMtMTUuODYtMzUuNDMtMzUuNDMgMC0xOS41NiAxNS44Ny0zNS40MiAzNS40My0zNS40MnpNNDIyLjQgNTU0LjE2YzE5LjU2IDAgMzUuNDIgMTUuODcgMzUuNDIgMzUuNDMgMCAxOS41Ny0xNS44NiAzNS40My0zNS40MiAzNS40My0xOS41NyAwLTM1LjQzLTE1Ljg2LTM1LjQzLTM1LjQzIDAtMTkuNTYgMTUuODYtMzUuNDMgMzUuNDMtMzUuNDN6bS0yMTIuMTgtNjkuMjJjMTkuNTYgMCAzNS40MiAxNS44NiAzNS40MiAzNS40MiAwIDE5LjU3LTE1Ljg2IDM1LjQzLTM1LjQyIDM1LjQzLTE5LjU3IDAtMzUuNDMtMTUuODYtMzUuNDMtMzUuNDMgMC0xOS41NiAxNS44Ni0zNS40MiAzNS40My0zNS40MnptNDg0Ljc3IDk1LjY5YzE5LjU3IDAgMzUuNDMgMTUuODYgMzUuNDMgMzUuNDMgMCAxOS41Ni0xNS44NiAzNS40Mi0zNS40MyAzNS40MnMtMzUuNDMtMTUuODYtMzUuNDMtMzUuNDJjMC0xOS41NyAxNS44Ni0zNS40MyAzNS40My0zNS40M3ptMjcyLjU5LTI2LjQ3YzE5LjU3IDAgMzUuNDMgMTUuODcgMzUuNDMgMzUuNDMgMCAxOS41Ny0xNS44NiAzNS40My0zNS40MyAzNS40My0xOS41NiAwLTM1LjQyLTE1Ljg2LTM1LjQyLTM1LjQzIDAtMTkuNTYgMTUuODYtMzUuNDMgMzUuNDItMzUuNDN6Ii8+DQogIDxwYXRoIGZpbGw9IiM2MDYwNjIiIGQ9Ik0zOTQuNTUgNzQ3Ljk2YzIxNy45IDM3LjcyIDM3NC42MSAzNy43MiA1OTIuNTEgMC0xMjQuMTMgMTEwLjgxLTQ2OC4zNyAxMTAuODEtNTkyLjUxIDB6Ii8+DQo8L3N2Zz4=');
+            z-index: 25;
+            filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.5)) brightness(0.85);
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+        }
+
+        .info {
+            color: #fff;
+            font-size: clamp(14px, 3.5vw, 42px);
+            z-index: 33;
+            font-family: 'Honk', cursive;
+            transition: opacity 3s;
+            position: fixed;
+            bottom: clamp(10px, 3vh, 30px);
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            text-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+            letter-spacing: 2px;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 800px) {
+            .info {
+                font-size: 12px;
+                bottom: 12px;
+                white-space: normal;
+                padding: 0 20px;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .info {
+                font-size: 9px;
+                bottom: 8px;
+                padding: 0 10px;
+            }
+        }
+
+        @media (pointer: coarse) {
+            .info {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas class="space"></canvas>
+    <canvas class="shootingstar"></canvas>
+    <canvas class="planets"></canvas>
+
+    <div class="ufo"></div>
+    <div class="info">👽 touch or move mouse to control UFO</div>
+
+    <script>
+        // ===== SPACE CANVAS =====
+        let space = document.querySelector('.space');
+        let planets = document.querySelector('.planets');
+        let ctx = space.getContext('2d');
+        let ctxPlanets = planets.getContext('2d');
+
+        function setCanvasDimensions() {
+            space.width = window.innerWidth;
+            space.height = window.innerHeight;
+            planets.width = window.innerWidth;
+            planets.height = window.innerHeight;
+
+            drawSpace();
+            drawPlanets();
+        }
+
+        function drawSpace() {
+            ctx.clearRect(0, 0, space.width, space.height);
+            const w = space.width;
+            const h = space.height;
+
+            for (let i = 0; i < 2500; i++) {
+                let randomX = Math.random() * w;
+                let randomY = Math.random() * h;
+                let size = Math.random() < 0.7 ? 0.5 : 1.5;
+                let r = Math.floor(Math.random() * 155) + 100;
+                let g = Math.floor(Math.random() * 155) + 100;
+                let b = Math.floor(Math.random() * 155) + 100;
+                ctx.fillStyle = `rgb(${r},${g},${b})`;
+                ctx.fillRect(randomX, randomY, size, size);
+            }
+        }
+
+        function drawPlanets() {
+            ctxPlanets.clearRect(0, 0, planets.width, planets.height);
+
+            let planetsArray = [];
+            const w = planets.width;
+            const h = planets.height;
+
+            for (let j = 0; j < 9; j++) {
+                let x, y, radius;
+                let overlaps;
+                let attempts = 0;
+                const maxAttempts = 1000;
+
+                do {
+                    radius = Math.random() * 20 + 10;
+                    x = Math.random() * (w - 2 * radius) + radius;
+                    y = Math.random() * (h - 2 * radius) + radius;
+
+                    overlaps = false;
+                    for (let i = 0; i < planetsArray.length; i++) {
+                        let other = planetsArray[i];
+                        let dx = x - other.x;
+                        let dy = y - other.y;
+                        let distance = Math.sqrt(dx * dx + dy * dy);
+                        if (distance < radius + other.radius) {
+                            overlaps = true;
+                            break;
+                        }
+                    }
+                    attempts++;
+                    if (attempts > maxAttempts) break;
+                } while (overlaps);
+
+                planetsArray.push({ x, y, radius });
+
+                let hue = Math.random() * 260;
+                let grad = ctxPlanets.createRadialGradient(x + 15, y + 15, 5, x + 15, y + 15, radius);
+                grad.addColorStop(0, `hsl(${hue}, 100%, 40%)`);
+                grad.addColorStop(1, `hsl(${hue}, 100%, 20%)`);
+
+                ctxPlanets.fillStyle = grad;
+                ctxPlanets.beginPath();
+                ctxPlanets.arc(x, y, radius, 0, Math.PI * 2);
+                ctxPlanets.fill();
+            }
+        }
+
+        setCanvasDimensions();
+        window.addEventListener('resize', setCanvasDimensions);
+
+        // ===== MOUSE PARALLAX =====
+        let info = document.querySelector('.info');
+
+        function handlePointerMove(clientX, clientY) {
+            info.style.opacity = '0';
+
+            const moveXSpace = (clientX - window.innerWidth / 2) * -0.01;
+            const moveYSpace = (clientY - window.innerHeight / 2) * -0.01;
+
+            const moveXPlanets = (clientX - window.innerWidth / 2) * -0.0185;
+            const moveYPlanets = (clientY - window.innerHeight / 2) * -0.0185;
+
+            space.style.transform = `translate(${moveXSpace}px, ${moveYSpace}px)`;
+            planets.style.transform = `translate(${moveXPlanets}px, ${moveYPlanets}px)`;
+
+            // UFO follow
+            targetX = clientX;
+            targetY = clientY;
+        }
+
+        // ===== UFO FOLLOW =====
+        const ufo = document.querySelector('.ufo');
+        let targetX = -200;
+        let targetY = -200;
+        let currentX = -200;
+        let currentY = -200;
+        let floatOffset = 0;
+
+        // Mouse
+        document.addEventListener('mousemove', (e) => {
+            handlePointerMove(e.clientX, e.clientY);
+        });
+
+        // Touch
+        document.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            if (touch) {
+                handlePointerMove(touch.clientX, touch.clientY);
+            }
+        }, { passive: false });
+
+        document.addEventListener('touchstart', (e) => {
+            const touch = e.touches[0];
+            if (touch) {
+                handlePointerMove(touch.clientX, touch.clientY);
+            }
+        }, { passive: true });
+
+        document.addEventListener('touchend', () => {
+            // Не сбрасываем позицию, чтобы тарелка оставалась на месте
+        }, { passive: true });
+
+        function animateUFO() {
+            currentX += (targetX - currentX) * 0.1;
+            currentY += (targetY - currentY) * 0.1;
+            floatOffset = Math.sin(Date.now() * 0.005) * 5;
+            ufo.style.left = currentX + 'px';
+            ufo.style.top = (currentY + floatOffset) + 'px';
+            requestAnimationFrame(animateUFO);
+        }
+        animateUFO();
+
+        // ===== SHOOTING STARS =====
+        const shootingStar = document.querySelector('.shootingstar');
+        const starCtx = shootingStar.getContext('2d');
+        shootingStar.width = window.innerWidth;
+        shootingStar.height = window.innerHeight;
+
+        let pixels = [];
+        const angleRad = 170 * (Math.PI / 180);
+
+        for (let k = 0; k < 35; k++) {
+            let rX = Math.floor(Math.random() * shootingStar.width);
+            let rY = Math.floor(Math.random() * shootingStar.height);
+            let size = 0.85;
+            let r = Math.floor(Math.random() * 155) + 100;
+            let g = Math.floor(Math.random() * 155) + 100;
+            let b = Math.floor(Math.random() * 155) + 100;
+            let speed = Math.random() * 2 + 3;
+            let delay = Math.random() * 100;
+
+            pixels.push({
+                x: rX,
+                y: rY,
+                size: size,
+                color: `rgb(${r},${g},${b})`,
+                speedX: Math.cos(angleRad) * speed,
+                speedY: Math.sin(angleRad) * speed,
+                delay: delay
+            });
+        }
+
+        function animatePixels() {
+            starCtx.clearRect(0, 0, shootingStar.width, shootingStar.height);
+
+            pixels.forEach(p => {
+                if (p.delay > 0) {
+                    p.delay--;
+                } else {
+                    p.x += p.speedX;
+                    p.y += p.speedY;
+                    if (p.x < 0) p.x = shootingStar.width;
+                    if (p.y > shootingStar.height) p.y = 0;
+                }
+                starCtx.fillStyle = p.color;
+                starCtx.fillRect(Math.round(p.x), Math.round(p.y), p.size, p.size);
+            });
+
+            requestAnimationFrame(animatePixels);
+        }
+        animatePixels();
+
+        // Resize shooting star canvas
+        window.addEventListener('resize', () => {
+            shootingStar.width = window.innerWidth;
+            shootingStar.height = window.innerHeight;
+        });
+    </script>
+
+</body>
+</html>
